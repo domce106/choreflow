@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "ChoreFlow - ADHD Chore Tracker",
+    "slug": "choreflow",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.choreflow.adhdapp",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#F1F5F9",
+        "foregroundImage": "./assets/android-icon-foreground.png"
+      },
+      "package": "com.choreflow.adhdapp"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#6366F1"
+        }
+      ],
+      "expo-font"
+    ]
+  }
+}
