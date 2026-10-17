@@ -82,3 +82,7 @@ upgrade those packages with `npx expo install <package>` (or `npx expo install -
 
 GitHub Actions runs `npm run check` on every push to `main` and on every pull request. See
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
+
+## License
+
+[MIT](LICENSE) © 2026 Domantas Čiapas
