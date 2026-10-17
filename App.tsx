@@ -6,7 +6,6 @@ import {
   StyleSheet,
   FlatList,
   StatusBar,
-  RefreshControl,
   TouchableOpacity,
   AppState,
 } from 'react-native';
@@ -30,22 +29,25 @@ import { QuickOverviewWidget } from './src/components/widgets/QuickOverviewWidge
 import { ChoreConsistencyWidget } from './src/components/widgets/ChoreConsistencyWidget';
 import { CustomizeWidgetsModal } from './src/components/widgets/CustomizeWidgetsModal';
 import { Ionicons } from '@expo/vector-icons';
-import { triggerLightHaptic } from './src/utils/haptics';
 
 export default function App() {
   const [chores, setChores] = useState<Chore[]>([]);
   const [widgets, setWidgets] = useState<HomeWidgetConfig[]>(DEFAULT_WIDGETS);
   const [availableLabels, setAvailableLabels] = useState<string[]>(INITIAL_AVAILABLE_LABELS);
-  const [refreshing, setRefreshing] = useState(false);
   // Lateness is time-based, so re-render periodically instead of only on edits
   const [now, setNow] = useState(() => Date.now());
+  // Lets the foreground listener read the latest chores without re-subscribing
   const choresRef = useRef(chores);
-  choresRef.current = chores;
+  useEffect(() => {
+    choresRef.current = chores;
+  }, [chores]);
 
   // Filters & Modal States
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
   const [editingChore, setEditingChore] = useState<Chore | null>(null);
   const [editModalVisible, setEditModalVisible] = useState(false);
+  // Bumped on every open so the editor remounts with fresh form state
+  const [editorKey, setEditorKey] = useState(0);
   const [customizeModalVisible, setCustomizeModalVisible] = useState(false);
 
   // Initial Data Load
@@ -76,16 +78,6 @@ export default function App() {
       clearInterval(interval);
       subscription.remove();
     };
-  }, []);
-
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    triggerLightHaptic();
-    const data = await loadAppData();
-    setChores(data.chores);
-    setWidgets(data.widgets);
-    setAvailableLabels(data.availableLabels);
-    setRefreshing(false);
   }, []);
 
   // Persist Helper
@@ -158,6 +150,12 @@ export default function App() {
     [chores, availableLabels]
   );
 
+  const openEditor = useCallback((chore: Chore | null) => {
+    setEditingChore(chore);
+    setEditorKey((k) => k + 1);
+    setEditModalVisible(true);
+  }, []);
+
   // Sorted and Filtered Chores
   const sortedChores = useMemo(() => sortByLateness(chores, now), [chores, now]);
 
@@ -198,10 +196,7 @@ export default function App() {
 
       {/* Header */}
       <Header
-        onOpenAddChore={() => {
-          setEditingChore(null);
-          setEditModalVisible(true);
-        }}
+        onOpenAddChore={() => openEditor(null)}
         onOpenCustomizeWidgets={() => setCustomizeModalVisible(true)}
       />
 
@@ -214,18 +209,12 @@ export default function App() {
             <ChoreCard
               chore={item}
               onLogCompleted={handleLogCompleted}
-              onEdit={(c) => {
-                setEditingChore(c);
-                setEditModalVisible(true);
-              }}
+              onEdit={openEditor}
               onSelectLabel={(label) => setSelectedLabel(label)}
             />
           )}
           contentContainerStyle={styles.listContainer}
           showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
           ListHeaderComponent={
             chores.length > 0 ? (
               <View style={styles.headerWidgetsArea}>
@@ -250,10 +239,7 @@ export default function App() {
                     chores={chores}
                     limit={topLatenessLimit}
                     onLogCompleted={handleLogCompleted}
-                    onSelectChore={(c) => {
-                      setEditingChore(c);
-                      setEditModalVisible(true);
-                    }}
+                    onSelectChore={openEditor}
                   />
                 )}
 
@@ -282,9 +268,7 @@ export default function App() {
                       ? `Chores in #${selectedLabel} (${filteredChores.length})`
                       : `All Chores (${chores.length})`}
                   </Text>
-                  <Text style={styles.sectionHeaderSortNote}>
-                    Sorted by lateness ↓
-                  </Text>
+                  <Text style={styles.sectionHeaderSortNote}>Sorted by lateness ↓</Text>
                 </View>
               </View>
             ) : null
@@ -322,6 +306,7 @@ export default function App() {
 
       {/* Add / Edit Chore Modal */}
       <EditChoreModal
+        key={editorKey}
         visible={editModalVisible}
         chore={editingChore}
         availableLabels={availableLabels}

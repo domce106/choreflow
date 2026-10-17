@@ -29,10 +29,7 @@ export const ChoreCard: React.FC<ChoreCardProps> = ({
 
   return (
     <TouchableOpacity
-      style={[
-        styles.card,
-        timing.isOverdue && { borderColor: statusTheme.border },
-      ]}
+      style={[styles.card, timing.isOverdue && { borderColor: statusTheme.border }]}
       onPress={() => onEdit(chore)}
       activeOpacity={0.85}
     >
@@ -52,9 +49,7 @@ export const ChoreCard: React.FC<ChoreCardProps> = ({
           ]}
         >
           <View style={[styles.badgeDot, { backgroundColor: statusTheme.badge }]} />
-          <Text style={[styles.badgeText, { color: statusTheme.text }]}>
-            {timing.latenessText}
-          </Text>
+          <Text style={[styles.badgeText, { color: statusTheme.text }]}>{timing.latenessText}</Text>
         </View>
       </View>
 
@@ -71,9 +66,7 @@ export const ChoreCard: React.FC<ChoreCardProps> = ({
           {/* Time since last performed */}
           <View style={styles.timeRow}>
             <Ionicons name="time-outline" size={13} color={colors.textMuted} />
-            <Text style={styles.timeText}>
-              {timing.timeSinceLastPerformedText}
-            </Text>
+            <Text style={styles.timeText}>{timing.timeSinceLastPerformedText}</Text>
           </View>
         </View>
 

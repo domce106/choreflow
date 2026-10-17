@@ -89,14 +89,19 @@ describe('time.ts - Lateness calculation and ordering', () => {
       lastCompletedAt: now - DAY_MS * 7, // due 6 days ago (latenessMs = +6 days)
     };
 
-    const sorted = sortByLateness(
-      [choreOnTrack, choreMildlyOverdue, choreMostOverdue],
-      now
-    );
+    const sorted = sortByLateness([choreOnTrack, choreMildlyOverdue, choreMostOverdue], now);
 
     expect(sorted[0].id).toBe('most-overdue');
     expect(sorted[1].id).toBe('mild-overdue');
     expect(sorted[2].id).toBe('on-track');
+  });
+
+  test('formats durations at each scale', () => {
+    expect(formatDurationHuman(30 * 1000)).toBe('1m');
+    expect(formatDurationHuman(3 * 60 * 60 * 1000)).toBe('3h');
+    expect(formatDurationHuman(DAY_MS)).toBe('1 day');
+    expect(formatDurationHuman(DAY_MS * 20)).toBe('2 weeks');
+    expect(formatDurationHuman(DAY_MS * 90)).toBe('3 mo');
   });
 
   test('formats frequency readable text', () => {

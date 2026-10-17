@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "ChoreFlow - ADHD Chore Tracker",
+    "name": "ChoreFlow",
     "slug": "choreflow",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,9 +10,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.choreflow.adhdapp",
       "infoPlist": {
-        "UIBackgroundModes": [
-          "remote-notification"
-        ]
+        "UIBackgroundModes": ["remote-notification"]
       }
     },
     "android": {

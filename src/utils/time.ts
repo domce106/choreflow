@@ -47,7 +47,8 @@ export function formatDurationHuman(diffMs: number): string {
  * Calculates how long since last performed and lateness past due date.
  */
 export function calculateTiming(chore: Chore, now: number = Date.now()): ChoreTimingInfo {
-  const frequencyDays = chore.frequencyInDays || calculateFrequencyInDays(chore.frequencyValue, chore.frequencyUnit);
+  const frequencyDays =
+    chore.frequencyInDays || calculateFrequencyInDays(chore.frequencyValue, chore.frequencyUnit);
   const freqMs = frequencyDays * MS_PER_DAY;
 
   const baseTimestamp = chore.lastCompletedAt ?? chore.createdAt;

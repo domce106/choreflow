@@ -9,9 +9,17 @@ import {
   Switch,
   ScrollView,
 } from 'react-native';
-import { Chore, HomeWidgetConfig } from '../../types/chore';
+import { Chore, HomeWidgetConfig, WidgetType } from '../../types/chore';
 import { colors } from '../../theme/colors';
 import { triggerLightHaptic } from '../../utils/haptics';
+
+const WIDGET_DESCRIPTIONS: Record<WidgetType, string> = {
+  'chore-consistency':
+    'Displays a performance graph of how consistently you meet the chore frequency.',
+  'top-lateness': 'Displays the top most late chores needing attention.',
+  'category-shortcuts': 'Quick-tap shortcut tiles to filter by category/label.',
+  'quick-overview': 'Summary cards of overdue and on-track counts.',
+};
 
 interface CustomizeWidgetsModalProps {
   visible: boolean;
@@ -36,9 +44,7 @@ export const CustomizeWidgetsModal: React.FC<CustomizeWidgetsModalProps> = ({
 
   const changeLimit = (id: string, limit: number) => {
     triggerLightHaptic();
-    const updated = widgets.map((w) =>
-      w.id === id ? { ...w, itemLimit: limit } : w
-    );
+    const updated = widgets.map((w) => (w.id === id ? { ...w, itemLimit: limit } : w));
     onUpdateWidgets(updated);
   };
 
@@ -74,34 +80,24 @@ export const CustomizeWidgetsModal: React.FC<CustomizeWidgetsModalProps> = ({
             <View key={widget.id} style={styles.widgetRow}>
               <View style={styles.widgetInfo}>
                 <Text style={styles.widgetTitle}>{widget.title}</Text>
-                <Text style={styles.widgetSubtitle}>
-                  {widget.type === 'chore-consistency'
-                    ? 'Displays a performance graph of how consistently you meet the chore frequency.'
-                    : widget.type === 'top-lateness'
-                    ? 'Displays the top most late chores needing attention.'
-                    : widget.type === 'category-shortcuts'
-                    ? 'Quick-tap shortcut tiles to filter by category/label.'
-                    : widget.type === 'quick-overview'
-                    ? 'Summary cards of overdue and on-track counts.'
-                    : 'The full chore list ordered by lateness.'}
-                </Text>
+                <Text style={styles.widgetSubtitle}>{WIDGET_DESCRIPTIONS[widget.type]}</Text>
 
                 {/* Additional controls for Consistency Tracker */}
                 {widget.type === 'chore-consistency' && widget.enabled && chores.length > 0 && (
                   <View style={styles.pickerSection}>
                     <Text style={styles.pickerLabel}>Track Chore:</Text>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 6 }}>
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      style={{ marginTop: 6 }}
+                    >
                       <View style={{ flexDirection: 'row', gap: 6 }}>
                         {chores.map((c) => {
-                          const isSelected =
-                            (widget.selectedChoreId || chores[0]?.id) === c.id;
+                          const isSelected = (widget.selectedChoreId || chores[0]?.id) === c.id;
                           return (
                             <TouchableOpacity
                               key={c.id}
-                              style={[
-                                styles.chorePill,
-                                isSelected && styles.chorePillActive,
-                              ]}
+                              style={[styles.chorePill, isSelected && styles.chorePillActive]}
                               onPress={() => changeSelectedChore(widget.id, c.id)}
                             >
                               <Text
@@ -136,8 +132,7 @@ export const CustomizeWidgetsModal: React.FC<CustomizeWidgetsModalProps> = ({
                         <Text
                           style={[
                             styles.limitChipText,
-                            (widget.itemLimit || 3) === num &&
-                              styles.limitChipTextActive,
+                            (widget.itemLimit || 3) === num && styles.limitChipTextActive,
                           ]}
                         >
                           {num} items

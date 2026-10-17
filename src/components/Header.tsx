@@ -9,15 +9,12 @@ interface HeaderProps {
   onOpenCustomizeWidgets: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({
-  onOpenAddChore,
-  onOpenCustomizeWidgets,
-}) => {
+export const Header: React.FC<HeaderProps> = ({ onOpenAddChore, onOpenCustomizeWidgets }) => {
   return (
     <View style={styles.header}>
       <View>
         <View style={styles.titleRow}>
-          <Text style={styles.title}>House Chores</Text>
+          <Text style={styles.title}>ChoreFlow</Text>
           <View style={styles.pastelDot} />
         </View>
         <Text style={styles.subtitle}>Sorted by lateness & overdue time</Text>

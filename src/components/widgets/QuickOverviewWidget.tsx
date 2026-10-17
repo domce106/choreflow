@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Chore } from '../../types/chore';
 import { calculateTiming } from '../../utils/time';
-import { colors } from '../../theme/colors';
 
 interface QuickOverviewWidgetProps {
   chores: Chore[];

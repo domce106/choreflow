@@ -24,21 +24,13 @@ export const CategoryFilterBar: React.FC<CategoryFilterBarProps> = ({
         contentContainerStyle={styles.scrollContent}
       >
         <TouchableOpacity
-          style={[
-            styles.filterChip,
-            selectedLabel === null && styles.filterChipActive,
-          ]}
+          style={[styles.filterChip, selectedLabel === null && styles.filterChipActive]}
           onPress={() => {
             triggerLightHaptic();
             onSelectLabel(null);
           }}
         >
-          <Text
-            style={[
-              styles.filterText,
-              selectedLabel === null && styles.filterTextActive,
-            ]}
-          >
+          <Text style={[styles.filterText, selectedLabel === null && styles.filterTextActive]}>
             All Chores ({totalChoresCount})
           </Text>
         </TouchableOpacity>
@@ -51,7 +43,10 @@ export const CategoryFilterBar: React.FC<CategoryFilterBarProps> = ({
               key={label}
               style={[
                 styles.filterChip,
-                { backgroundColor: isSelected ? colors.primary : pastel.bg, borderColor: isSelected ? colors.primary : pastel.border },
+                {
+                  backgroundColor: isSelected ? colors.primary : pastel.bg,
+                  borderColor: isSelected ? colors.primary : pastel.border,
+                },
               ]}
               onPress={() => {
                 triggerLightHaptic();

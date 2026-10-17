@@ -1,60 +1,88 @@
-# House Chores 🏡✨
+# ChoreFlow
 
-A clean, responsive cross-platform chore tracking app for **iPhone (iOS)**, **Android**, **Windows**, **Linux**, and **Web**.
+A chore tracker for iOS, Android and the web, built with Expo and React Native. Every chore has a
+repeat interval, and the list is always sorted by how overdue each chore is, so the one that most
+needs doing is at the top.
 
----
+## Features
 
-## 🌟 Key Features
+- **Repeat intervals**: every _N_ days, weeks or months, with presets for the common ones.
+- **Labels**: tag each chore with any number of your own labels and filter the list by label.
+- **One-tap logging**: mark a chore done from the list, from a widget, or from its edit screen.
+- **Reminders**: an optional local notification when a chore comes due, and another one later if
+  it's still overdue.
+- **Home widgets** you can switch on and off:
+  - _Consistency Tracker_: on-time score, current streak and a bar chart of recent cycles for one
+    chore.
+  - _Most Late Chores_: the top 3, 5 or 10 most overdue chores.
+  - _Category Shortcuts_: one tile per label with chore and overdue counts.
+  - _Overview_: overdue, on-track and total counts.
 
-1. **Chores with Configurable Frequencies**:
-   - Set frequency in Days, Weeks, or Months (e.g. Daily, Every 3 days, Weekly, Monthly).
-2. **User-Defined Multi-Labels**:
-   - Freely name labels (e.g. `#Kitchen`, `#Floors`, `#Upstairs`, `#DeepClean`).
-   - Assign multiple labels or none.
-3. **Completion Logging & Time-Elapsed Tracking**:
-   - 1-tap "Done" logging.
-   - Displays exact time passed since the chore was last performed (e.g. *"Last performed: 3 days ago"*).
-4. **Sorted Strictly by Order of Lateness**:
-   - Chores are sorted with the most overdue chore (most time passed since due date) at the very top.
-5. **Category Filtering**:
-   - Filter the list by tapping any category pill or shortcut tile.
-6. **Customizable Widget-Style Home Page**:
-   - 📊 **Consistency & Performance Tracker Widget (Dopamine Booster)**:
-     - Pick any chore from the list (using the horizontal selector chips or widget settings).
-     - Displays an interactive performance bar graph of past completion cycles.
-     - Celebratory on-time score (`92%`), on-time streak (`🔥 5 in a row`), and target frequency baseline.
-     - One-tap button right on the widget to log completions and watch your streak grow!
-   - 🔥 **Most Late Chores Widget**: Displays the top 3, 5, or 10 most overdue chores with direct 1-tap completion logging.
-   - 🏷️ **Category Shortcuts Widget**: Interactive tiles for user categories showing chore and overdue counts.
-   - 📈 **Status Overview Widget**: High-level summary of overdue, on-track, and total chores.
-   - ⚙️ **Customize Widgets Modal**: Toggle any widget on or off, select which chore is tracked, or change item limits.
+All data is stored on the device with AsyncStorage. There is no account or server.
 
----
+## Getting started
 
-## 📱 Running on iPhone
+Requirements: Node.js 22 (see `.nvmrc`; 20.19.4 or newer also works), plus the [Expo Go](https://expo.dev/go) app on your phone or a
+simulator/emulator.
 
-```powershell
-npx expo start -c
+```bash
+npm install
+npm start
 ```
-*(Or `npx expo start --tunnel -c` if on guest Wi-Fi)*.
-Scan the QR code with your iPhone's **Camera app** and tap **"Open in Expo Go"**.
 
----
+Scan the QR code with your phone's camera (iOS) or the Expo Go app (Android). If your phone can't
+reach your computer, for example on guest Wi-Fi, use `npx expo start --tunnel`.
 
-## 💻 Running on Desktop (Windows / Linux)
+To run in a browser instead:
 
-```powershell
+```bash
 npm run web
-# or
-npx expo start --web
 ```
 
----
+Reminders only work on iOS and Android. They are not scheduled on the web.
 
-## 🧪 Automated Testing & Type Checking
+## Scripts
 
-```powershell
-npm test        # 9/9 unit tests passing
-npm run typecheck # 0 TypeScript errors
-npx expo-doctor # 21/21 checks passing
+| Command                 | What it does                                   |
+| ----------------------- | ---------------------------------------------- |
+| `npm start`             | Start the Expo dev server                      |
+| `npm run web`           | Start the dev server and open the web version  |
+| `npm run lint`          | Run ESLint over the project                    |
+| `npm run format`        | Format all files with Prettier                 |
+| `npm run format:check`  | Check formatting without changing files        |
+| `npm run typecheck`     | Type-check with TypeScript                     |
+| `npm test`              | Run the Jest unit tests                        |
+| `npm run test:coverage` | Run tests with a coverage report               |
+| `npm run check`         | Typecheck, lint, format check and tests (= CI) |
+
+## Project structure
+
 ```
+App.tsx                 Root component: app state, persistence, home screen layout
+src/
+  components/           Chore card, edit modal, header, filter bar
+    widgets/            Home screen widgets and the widget settings modal
+  theme/colors.ts       Color palette
+  types/chore.ts        Shared data types
+  utils/
+    storage.ts          Load/save app data (AsyncStorage)
+    time.ts             Lateness, sorting and consistency calculations
+    notifications.ts    Reminder permissions and scheduling
+    haptics.ts          Haptic feedback helpers
+__tests__/              Unit tests for the utils
+```
+
+## Upgrading dependencies
+
+Expo pins compatible versions of React Native and its own modules for each SDK release. Add or
+upgrade those packages with `npx expo install <package>` (or `npx expo install --fix`) rather than
+`npm install`. Run `npx expo-doctor` afterwards to catch mismatches.
+
+## Continuous integration
+
+GitHub Actions runs `npm run check` on every push to `main` and on every pull request. See
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml).
+
+## License
+
+[MIT](LICENSE) © 2026 Domantas Čiapas
