@@ -23,11 +23,7 @@ export interface ChoreTimingInfo {
 }
 
 export type WidgetType =
-  | 'top-lateness'
-  | 'category-shortcuts'
-  | 'quick-overview'
-  | 'chore-consistency'
-  | 'all-chores';
+  'top-lateness' | 'category-shortcuts' | 'quick-overview' | 'chore-consistency' | 'all-chores';
 
 export interface HomeWidgetConfig {
   id: string;

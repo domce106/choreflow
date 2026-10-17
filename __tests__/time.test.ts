@@ -89,10 +89,7 @@ describe('time.ts - Lateness calculation and ordering', () => {
       lastCompletedAt: now - DAY_MS * 7, // due 6 days ago (latenessMs = +6 days)
     };
 
-    const sorted = sortByLateness(
-      [choreOnTrack, choreMildlyOverdue, choreMostOverdue],
-      now
-    );
+    const sorted = sortByLateness([choreOnTrack, choreMildlyOverdue, choreMostOverdue], now);
 
     expect(sorted[0].id).toBe('most-overdue');
     expect(sorted[1].id).toBe('mild-overdue');

@@ -10,9 +10,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.choreflow.adhdapp",
       "infoPlist": {
-        "UIBackgroundModes": [
-          "remote-notification"
-        ]
+        "UIBackgroundModes": ["remote-notification"]
       }
     },
     "android": {

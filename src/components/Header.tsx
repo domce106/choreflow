@@ -9,10 +9,7 @@ interface HeaderProps {
   onOpenCustomizeWidgets: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({
-  onOpenAddChore,
-  onOpenCustomizeWidgets,
-}) => {
+export const Header: React.FC<HeaderProps> = ({ onOpenAddChore, onOpenCustomizeWidgets }) => {
   return (
     <View style={styles.header}>
       <View>

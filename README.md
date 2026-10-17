@@ -13,7 +13,7 @@ A clean, responsive cross-platform chore tracking app for **iPhone (iOS)**, **An
    - Assign multiple labels or none.
 3. **Completion Logging & Time-Elapsed Tracking**:
    - 1-tap "Done" logging.
-   - Displays exact time passed since the chore was last performed (e.g. *"Last performed: 3 days ago"*).
+   - Displays exact time passed since the chore was last performed (e.g. _"Last performed: 3 days ago"_).
 4. **Sorted Strictly by Order of Lateness**:
    - Chores are sorted with the most overdue chore (most time passed since due date) at the very top.
 5. **Category Filtering**:
@@ -36,7 +36,8 @@ A clean, responsive cross-platform chore tracking app for **iPhone (iOS)**, **An
 ```powershell
 npx expo start -c
 ```
-*(Or `npx expo start --tunnel -c` if on guest Wi-Fi)*.
+
+_(Or `npx expo start --tunnel -c` if on guest Wi-Fi)_.
 Scan the QR code with your iPhone's **Camera app** and tap **"Open in Expo Go"**.
 
 ---

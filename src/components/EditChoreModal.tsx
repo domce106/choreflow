@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Modal,
   View,
@@ -46,40 +46,17 @@ export const EditChoreModal: React.FC<EditChoreModalProps> = ({
   onDelete,
   onLogCompletedNow,
 }) => {
-  const [title, setTitle] = useState('');
-  const [notes, setNotes] = useState('');
-  const [frequencyValue, setFrequencyValue] = useState(1);
-  const [frequencyUnit, setFrequencyUnit] = useState<FrequencyUnit>('days');
-  const [customValueText, setCustomValueText] = useState('');
-  const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
+  // Form state is seeded once per mount; the parent remounts this component
+  // (via `key`) each time the modal opens, so no reset effect is needed.
+  const [title, setTitle] = useState(chore?.title ?? '');
+  const [notes, setNotes] = useState(chore?.notes ?? '');
+  const [frequencyValue, setFrequencyValue] = useState(chore?.frequencyValue ?? 1);
+  const [frequencyUnit, setFrequencyUnit] = useState<FrequencyUnit>(chore?.frequencyUnit ?? 'days');
+  const [customValueText, setCustomValueText] = useState(String(chore?.frequencyValue ?? 1));
+  const [selectedLabels, setSelectedLabels] = useState<string[]>(chore?.labels ?? []);
   const [newLabelInput, setNewLabelInput] = useState('');
   const [allLabelsPool, setAllLabelsPool] = useState<string[]>(availableLabels);
-  const [reminderEnabled, setReminderEnabled] = useState(true);
-
-  useEffect(() => {
-    setAllLabelsPool(availableLabels);
-  }, [availableLabels]);
-
-  useEffect(() => {
-    if (chore) {
-      setTitle(chore.title);
-      setNotes(chore.notes || '');
-      setFrequencyValue(chore.frequencyValue);
-      setFrequencyUnit(chore.frequencyUnit);
-      setCustomValueText(String(chore.frequencyValue));
-      setSelectedLabels(chore.labels || []);
-      setReminderEnabled(chore.reminderEnabled);
-    } else {
-      setTitle('');
-      setNotes('');
-      setFrequencyValue(1);
-      setFrequencyUnit('days');
-      setCustomValueText('1');
-      setSelectedLabels([]);
-      setReminderEnabled(true);
-    }
-    setNewLabelInput('');
-  }, [chore, visible]);
+  const [reminderEnabled, setReminderEnabled] = useState(chore?.reminderEnabled ?? true);
 
   const handleSelectPreset = (value: number, unit: FrequencyUnit) => {
     triggerLightHaptic();
@@ -161,14 +138,10 @@ export const EditChoreModal: React.FC<EditChoreModalProps> = ({
     if (Platform.OS === 'web') {
       if (window.confirm(`Delete "${chore.title}"?`)) doDelete();
     } else {
-      Alert.alert(
-        'Delete Chore',
-        `Are you sure you want to delete "${chore.title}"?`,
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Delete', style: 'destructive', onPress: doDelete },
-        ]
-      );
+      Alert.alert('Delete Chore', `Are you sure you want to delete "${chore.title}"?`, [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: doDelete },
+      ]);
     }
   };
 
@@ -184,9 +157,7 @@ export const EditChoreModal: React.FC<EditChoreModalProps> = ({
           <TouchableOpacity onPress={onClose} style={styles.headerButton}>
             <Text style={styles.cancelText}>Cancel</Text>
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>
-            {chore ? 'Edit Chore' : 'Add New Chore'}
-          </Text>
+          <Text style={styles.headerTitle}>{chore ? 'Edit Chore' : 'Add New Chore'}</Text>
           <TouchableOpacity onPress={handleSave} style={styles.headerButton}>
             <Text style={styles.saveText}>Save</Text>
           </TouchableOpacity>
@@ -219,23 +190,14 @@ export const EditChoreModal: React.FC<EditChoreModalProps> = ({
           <Text style={styles.sectionLabel}>FREQUENCY (HOW OFTEN IS IT DONE?)</Text>
           <View style={styles.presetsRow}>
             {FREQUENCY_PRESETS.map((p) => {
-              const isSelected =
-                frequencyValue === p.value && frequencyUnit === p.unit;
+              const isSelected = frequencyValue === p.value && frequencyUnit === p.unit;
               return (
                 <TouchableOpacity
                   key={`${p.value}-${p.unit}`}
-                  style={[
-                    styles.presetPill,
-                    isSelected && styles.presetPillSelected,
-                  ]}
+                  style={[styles.presetPill, isSelected && styles.presetPillSelected]}
                   onPress={() => handleSelectPreset(p.value, p.unit)}
                 >
-                  <Text
-                    style={[
-                      styles.presetText,
-                      isSelected && styles.presetTextSelected,
-                    ]}
-                  >
+                  <Text style={[styles.presetText, isSelected && styles.presetTextSelected]}>
                     {p.label}
                   </Text>
                 </TouchableOpacity>
@@ -259,20 +221,14 @@ export const EditChoreModal: React.FC<EditChoreModalProps> = ({
                 return (
                   <TouchableOpacity
                     key={u}
-                    style={[
-                      styles.unitButton,
-                      isSelected && styles.unitButtonSelected,
-                    ]}
+                    style={[styles.unitButton, isSelected && styles.unitButtonSelected]}
                     onPress={() => {
                       triggerLightHaptic();
                       setFrequencyUnit(u);
                     }}
                   >
                     <Text
-                      style={[
-                        styles.unitButtonText,
-                        isSelected && styles.unitButtonTextSelected,
-                      ]}
+                      style={[styles.unitButtonText, isSelected && styles.unitButtonTextSelected]}
                     >
                       {u}
                     </Text>
@@ -297,19 +253,11 @@ export const EditChoreModal: React.FC<EditChoreModalProps> = ({
               return (
                 <TouchableOpacity
                   key={label}
-                  style={[
-                    styles.labelChip,
-                    isSelected && styles.labelChipSelected,
-                  ]}
+                  style={[styles.labelChip, isSelected && styles.labelChipSelected]}
                   onPress={() => handleToggleLabel(label)}
                   activeOpacity={0.7}
                 >
-                  <Text
-                    style={[
-                      styles.labelChipText,
-                      isSelected && styles.labelChipTextSelected,
-                    ]}
-                  >
+                  <Text style={[styles.labelChipText, isSelected && styles.labelChipTextSelected]}>
                     #{label}
                   </Text>
                   {isSelected && (
@@ -335,10 +283,7 @@ export const EditChoreModal: React.FC<EditChoreModalProps> = ({
               placeholderTextColor={colors.textMuted}
               onSubmitEditing={handleAddNewLabel}
             />
-            <TouchableOpacity
-              style={styles.addLabelBtn}
-              onPress={handleAddNewLabel}
-            >
+            <TouchableOpacity style={styles.addLabelBtn} onPress={handleAddNewLabel}>
               <Ionicons name="add" size={20} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
@@ -348,7 +293,7 @@ export const EditChoreModal: React.FC<EditChoreModalProps> = ({
             <View style={{ flex: 1, paddingRight: 8 }}>
               <Text style={styles.switchTitle}>Remind When Due</Text>
               <Text style={styles.switchSubtitle}>
-                Sends a notification based on this chore's frequency and lateness.
+                Sends a notification based on this chore’s frequency and lateness.
               </Text>
             </View>
             <Switch
@@ -369,7 +314,12 @@ export const EditChoreModal: React.FC<EditChoreModalProps> = ({
               }}
               activeOpacity={0.8}
             >
-              <Ionicons name="checkmark-circle-outline" size={18} color="#16A34A" style={{ marginRight: 6 }} />
+              <Ionicons
+                name="checkmark-circle-outline"
+                size={18}
+                color="#16A34A"
+                style={{ marginRight: 6 }}
+              />
               <Text style={styles.logDoneNowText}>Log Chore As Done Right Now</Text>
             </TouchableOpacity>
           )}
@@ -381,7 +331,12 @@ export const EditChoreModal: React.FC<EditChoreModalProps> = ({
               onPress={handleDelete}
               activeOpacity={0.8}
             >
-              <Ionicons name="trash-outline" size={18} color={colors.danger} style={{ marginRight: 6 }} />
+              <Ionicons
+                name="trash-outline"
+                size={18}
+                color={colors.danger}
+                style={{ marginRight: 6 }}
+              />
               <Text style={styles.deleteButtonText}>Delete Chore</Text>
             </TouchableOpacity>
           )}

@@ -71,8 +71,7 @@ export async function loadAppData(): Promise<AppData> {
       chores: (parsed.chores || []).map((c) => ({
         ...c,
         frequencyInDays:
-          c.frequencyInDays ||
-          calculateFrequencyInDays(c.frequencyValue, c.frequencyUnit),
+          c.frequencyInDays || calculateFrequencyInDays(c.frequencyValue, c.frequencyUnit),
         completionHistory: c.completionHistory || [],
         labels: c.labels || [],
       })),

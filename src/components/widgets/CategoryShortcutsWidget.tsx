@@ -48,9 +48,7 @@ export const CategoryShortcutsWidget: React.FC<CategoryShortcutsWidgetProps> = (
         {labels.map((label, index) => {
           const matchingChores = chores.filter((c) => c.labels.includes(label));
           const count = matchingChores.length;
-          const overdueCount = matchingChores.filter(
-            (c) => calculateTiming(c).isOverdue
-          ).length;
+          const overdueCount = matchingChores.filter((c) => calculateTiming(c).isOverdue).length;
           const isSelected = activeFilter === label;
           const pastelTint = colors.pastels[index % colors.pastels.length];
 
@@ -59,7 +57,10 @@ export const CategoryShortcutsWidget: React.FC<CategoryShortcutsWidgetProps> = (
               key={label}
               style={[
                 styles.shortcutTile,
-                { backgroundColor: isSelected ? colors.primaryLight : pastelTint.bg, borderColor: isSelected ? colors.primary : pastelTint.border },
+                {
+                  backgroundColor: isSelected ? colors.primaryLight : pastelTint.bg,
+                  borderColor: isSelected ? colors.primary : pastelTint.border,
+                },
               ]}
               onPress={() => {
                 triggerLightHaptic();
@@ -84,12 +85,7 @@ export const CategoryShortcutsWidget: React.FC<CategoryShortcutsWidgetProps> = (
                 )}
               </View>
 
-              <Text
-                style={[
-                  styles.countText,
-                  isSelected && styles.countTextSelected,
-                ]}
-              >
+              <Text style={[styles.countText, isSelected && styles.countTextSelected]}>
                 {count} {count === 1 ? 'chore' : 'chores'}
               </Text>
             </TouchableOpacity>

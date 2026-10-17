@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Chore } from '../../types/chore';
 import { calculateChoreConsistency, formatFrequency } from '../../utils/time';
 import { colors } from '../../theme/colors';
@@ -25,8 +19,7 @@ export const ChoreConsistencyWidget: React.FC<ChoreConsistencyWidgetProps> = ({
   onSelectChoreId,
   onLogCompleted,
 }) => {
-  const activeChore =
-    chores.find((c) => c.id === selectedChoreId) || chores[0];
+  const activeChore = chores.find((c) => c.id === selectedChoreId) || chores[0];
 
   if (!activeChore) return null;
 
@@ -35,11 +28,7 @@ export const ChoreConsistencyWidget: React.FC<ChoreConsistencyWidgetProps> = ({
 
   const displayCycles = stats.cycles.slice(-6);
 
-  const maxDays = Math.max(
-    targetDays * 1.5,
-    ...displayCycles.map((c) => c.daysTaken),
-    3
-  );
+  const maxDays = Math.max(targetDays * 1.5, ...displayCycles.map((c) => c.daysTaken), 3);
 
   const handleChoreChipPress = (id: string) => {
     triggerLightHaptic();
@@ -77,17 +66,11 @@ export const ChoreConsistencyWidget: React.FC<ChoreConsistencyWidgetProps> = ({
           return (
             <TouchableOpacity
               key={chore.id}
-              style={[
-                styles.choreChip,
-                isSelected && styles.choreChipSelected,
-              ]}
+              style={[styles.choreChip, isSelected && styles.choreChipSelected]}
               onPress={() => handleChoreChipPress(chore.id)}
             >
               <Text
-                style={[
-                  styles.choreChipText,
-                  isSelected && styles.choreChipTextSelected,
-                ]}
+                style={[styles.choreChipText, isSelected && styles.choreChipTextSelected]}
                 numberOfLines={1}
               >
                 {chore.title}
@@ -107,9 +90,7 @@ export const ChoreConsistencyWidget: React.FC<ChoreConsistencyWidgetProps> = ({
         <View style={styles.streakContainer}>
           <View style={styles.streakBadge}>
             <Text style={styles.streakFire}>🔥</Text>
-            <Text style={styles.streakCount}>
-              {stats.currentStreak} in a row
-            </Text>
+            <Text style={styles.streakCount}>{stats.currentStreak} in a row</Text>
           </View>
           <Text style={styles.streakSub}>{stats.encouragementText}</Text>
         </View>
@@ -119,24 +100,19 @@ export const ChoreConsistencyWidget: React.FC<ChoreConsistencyWidgetProps> = ({
       <View style={styles.graphContainer}>
         <View style={styles.graphHeader}>
           <Text style={styles.graphTitle}>PERFORMANCE BY CYCLE</Text>
-          <Text style={styles.targetLineLabel}>
-            Goal: ≤ {targetDays}d per cycle
-          </Text>
+          <Text style={styles.targetLineLabel}>Goal: ≤ {targetDays}d per cycle</Text>
         </View>
 
         {displayCycles.length === 0 ? (
           <View style={styles.emptyGraph}>
             <Text style={styles.emptyGraphText}>
-              No completions logged yet. Tap "Log Done" below to start your streak!
+              No completions logged yet. Tap the button below to start your streak!
             </Text>
           </View>
         ) : (
           <View style={styles.barsArea}>
             {displayCycles.map((cycle) => {
-              const heightPercent = Math.min(
-                100,
-                Math.max(15, (cycle.daysTaken / maxDays) * 100)
-              );
+              const heightPercent = Math.min(100, Math.max(15, (cycle.daysTaken / maxDays) * 100));
 
               return (
                 <View key={cycle.cycleIndex} style={styles.barColumn}>
@@ -173,15 +149,9 @@ export const ChoreConsistencyWidget: React.FC<ChoreConsistencyWidgetProps> = ({
       </View>
 
       {/* Pastel Quick-Log Button */}
-      <TouchableOpacity
-        style={styles.logButton}
-        onPress={handleLogNow}
-        activeOpacity={0.8}
-      >
+      <TouchableOpacity style={styles.logButton} onPress={handleLogNow} activeOpacity={0.8}>
         <Ionicons name="sparkles" size={15} color="#FFFFFF" style={{ marginRight: 6 }} />
-        <Text style={styles.logButtonText}>
-          Log "{activeChore.title}" Done Now
-        </Text>
+        <Text style={styles.logButtonText}>Log “{activeChore.title}” Done Now</Text>
       </TouchableOpacity>
     </View>
   );

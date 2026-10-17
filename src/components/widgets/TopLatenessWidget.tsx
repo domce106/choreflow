@@ -46,10 +46,7 @@ export const TopLatenessWidget: React.FC<TopLatenessWidgetProps> = ({
           return (
             <TouchableOpacity
               key={chore.id}
-              style={[
-                styles.itemRow,
-                index < topItems.length - 1 && styles.borderBottom,
-              ]}
+              style={[styles.itemRow, index < topItems.length - 1 && styles.borderBottom]}
               onPress={() => onSelectChore(chore)}
               activeOpacity={0.7}
             >
@@ -58,11 +55,7 @@ export const TopLatenessWidget: React.FC<TopLatenessWidgetProps> = ({
                   {chore.title}
                 </Text>
                 <Text style={styles.itemSubtitle}>
-                  <Text
-                    style={
-                      timing.isOverdue ? styles.overdueText : styles.onTrackText
-                    }
-                  >
+                  <Text style={timing.isOverdue ? styles.overdueText : styles.onTrackText}>
                     {timing.latenessText}
                   </Text>{' '}
                   • {timing.timeSinceLastPerformedText}
