@@ -6,7 +6,6 @@ import {
   StyleSheet,
   FlatList,
   StatusBar,
-  RefreshControl,
   TouchableOpacity,
   AppState,
 } from 'react-native';
@@ -30,17 +29,18 @@ import { QuickOverviewWidget } from './src/components/widgets/QuickOverviewWidge
 import { ChoreConsistencyWidget } from './src/components/widgets/ChoreConsistencyWidget';
 import { CustomizeWidgetsModal } from './src/components/widgets/CustomizeWidgetsModal';
 import { Ionicons } from '@expo/vector-icons';
-import { triggerLightHaptic } from './src/utils/haptics';
 
 export default function App() {
   const [chores, setChores] = useState<Chore[]>([]);
   const [widgets, setWidgets] = useState<HomeWidgetConfig[]>(DEFAULT_WIDGETS);
   const [availableLabels, setAvailableLabels] = useState<string[]>(INITIAL_AVAILABLE_LABELS);
-  const [refreshing, setRefreshing] = useState(false);
   // Lateness is time-based, so re-render periodically instead of only on edits
   const [now, setNow] = useState(() => Date.now());
+  // Lets the foreground listener read the latest chores without re-subscribing
   const choresRef = useRef(chores);
-  choresRef.current = chores;
+  useEffect(() => {
+    choresRef.current = chores;
+  }, [chores]);
 
   // Filters & Modal States
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
@@ -78,16 +78,6 @@ export default function App() {
       clearInterval(interval);
       subscription.remove();
     };
-  }, []);
-
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    triggerLightHaptic();
-    const data = await loadAppData();
-    setChores(data.chores);
-    setWidgets(data.widgets);
-    setAvailableLabels(data.availableLabels);
-    setRefreshing(false);
   }, []);
 
   // Persist Helper
@@ -225,7 +215,6 @@ export default function App() {
           )}
           contentContainerStyle={styles.listContainer}
           showsVerticalScrollIndicator={false}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
           ListHeaderComponent={
             chores.length > 0 ? (
               <View style={styles.headerWidgetsArea}>

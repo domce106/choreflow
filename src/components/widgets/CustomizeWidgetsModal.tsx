@@ -9,9 +9,17 @@ import {
   Switch,
   ScrollView,
 } from 'react-native';
-import { Chore, HomeWidgetConfig } from '../../types/chore';
+import { Chore, HomeWidgetConfig, WidgetType } from '../../types/chore';
 import { colors } from '../../theme/colors';
 import { triggerLightHaptic } from '../../utils/haptics';
+
+const WIDGET_DESCRIPTIONS: Record<WidgetType, string> = {
+  'chore-consistency':
+    'Displays a performance graph of how consistently you meet the chore frequency.',
+  'top-lateness': 'Displays the top most late chores needing attention.',
+  'category-shortcuts': 'Quick-tap shortcut tiles to filter by category/label.',
+  'quick-overview': 'Summary cards of overdue and on-track counts.',
+};
 
 interface CustomizeWidgetsModalProps {
   visible: boolean;
@@ -72,17 +80,7 @@ export const CustomizeWidgetsModal: React.FC<CustomizeWidgetsModalProps> = ({
             <View key={widget.id} style={styles.widgetRow}>
               <View style={styles.widgetInfo}>
                 <Text style={styles.widgetTitle}>{widget.title}</Text>
-                <Text style={styles.widgetSubtitle}>
-                  {widget.type === 'chore-consistency'
-                    ? 'Displays a performance graph of how consistently you meet the chore frequency.'
-                    : widget.type === 'top-lateness'
-                      ? 'Displays the top most late chores needing attention.'
-                      : widget.type === 'category-shortcuts'
-                        ? 'Quick-tap shortcut tiles to filter by category/label.'
-                        : widget.type === 'quick-overview'
-                          ? 'Summary cards of overdue and on-track counts.'
-                          : 'The full chore list ordered by lateness.'}
-                </Text>
+                <Text style={styles.widgetSubtitle}>{WIDGET_DESCRIPTIONS[widget.type]}</Text>
 
                 {/* Additional controls for Consistency Tracker */}
                 {widget.type === 'chore-consistency' && widget.enabled && chores.length > 0 && (

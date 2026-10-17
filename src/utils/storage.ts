@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AppData, Chore, HomeWidgetConfig } from '../types/chore';
+import { AppData, HomeWidgetConfig } from '../types/chore';
 import { calculateFrequencyInDays } from './time';
 
 const APP_DATA_STORAGE_KEY = '@house_chores_app_clean_v4';
@@ -30,16 +30,7 @@ export const DEFAULT_WIDGETS: HomeWidgetConfig[] = [
     title: 'Overview',
     enabled: true,
   },
-  {
-    id: 'widget-all-chores',
-    type: 'all-chores',
-    title: 'All Chores',
-    enabled: true,
-  },
 ];
-
-// No predefined chores - clean slate for the user
-export const INITIAL_SAMPLE_CHORES: Chore[] = [];
 
 // No predefined labels - user creates their own
 export const INITIAL_AVAILABLE_LABELS: string[] = [];
@@ -75,7 +66,7 @@ export async function loadAppData(): Promise<AppData> {
         completionHistory: c.completionHistory || [],
         labels: c.labels || [],
       })),
-      widgets: parsed.widgets?.length ? parsed.widgets : DEFAULT_WIDGETS,
+      widgets: reconcileWidgets(parsed.widgets),
       availableLabels: parsed.availableLabels || [],
     };
   } catch (err) {
@@ -88,6 +79,17 @@ export async function loadAppData(): Promise<AppData> {
     }
     return defaultData;
   }
+}
+
+/**
+ * Drops stored widgets whose type no longer exists and appends any default
+ * widgets that were added after the data was saved, keeping the user's order.
+ */
+export function reconcileWidgets(stored: HomeWidgetConfig[] | undefined): HomeWidgetConfig[] {
+  const knownTypes = new Set(DEFAULT_WIDGETS.map((w) => w.type));
+  const kept = (stored || []).filter((w) => knownTypes.has(w.type));
+  const keptTypes = new Set(kept.map((w) => w.type));
+  return [...kept, ...DEFAULT_WIDGETS.filter((w) => !keptTypes.has(w.type))];
 }
 
 export async function saveAppData(data: AppData): Promise<void> {

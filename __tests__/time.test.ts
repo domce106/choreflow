@@ -96,6 +96,14 @@ describe('time.ts - Lateness calculation and ordering', () => {
     expect(sorted[2].id).toBe('on-track');
   });
 
+  test('formats durations at each scale', () => {
+    expect(formatDurationHuman(30 * 1000)).toBe('1m');
+    expect(formatDurationHuman(3 * 60 * 60 * 1000)).toBe('3h');
+    expect(formatDurationHuman(DAY_MS)).toBe('1 day');
+    expect(formatDurationHuman(DAY_MS * 20)).toBe('2 weeks');
+    expect(formatDurationHuman(DAY_MS * 90)).toBe('3 mo');
+  });
+
   test('formats frequency readable text', () => {
     expect(formatFrequency(1, 'days')).toBe('Daily');
     expect(formatFrequency(3, 'days')).toBe('Every 3 days');

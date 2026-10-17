@@ -23,7 +23,7 @@ export interface ChoreTimingInfo {
 }
 
 export type WidgetType =
-  'top-lateness' | 'category-shortcuts' | 'quick-overview' | 'chore-consistency' | 'all-chores';
+  'top-lateness' | 'category-shortcuts' | 'quick-overview' | 'chore-consistency';
 
 export interface HomeWidgetConfig {
   id: string;
@@ -31,7 +31,6 @@ export interface HomeWidgetConfig {
   title: string;
   enabled: boolean;
   itemLimit?: number; // e.g. show top 3 or 5 items
-  selectedLabels?: string[]; // for category-specific shortcut widgets
   selectedChoreId?: string; // for chore consistency graph widget
 }
 

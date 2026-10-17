@@ -11,7 +11,6 @@ interface TopLatenessWidgetProps {
   limit?: number;
   onLogCompleted: (choreId: string) => void;
   onSelectChore: (chore: Chore) => void;
-  onViewAll?: () => void;
 }
 
 export const TopLatenessWidget: React.FC<TopLatenessWidgetProps> = ({
@@ -19,7 +18,6 @@ export const TopLatenessWidget: React.FC<TopLatenessWidgetProps> = ({
   limit = 3,
   onLogCompleted,
   onSelectChore,
-  onViewAll,
 }) => {
   const sorted = sortByLateness(chores);
   const topItems = sorted.slice(0, limit);
@@ -33,11 +31,6 @@ export const TopLatenessWidget: React.FC<TopLatenessWidgetProps> = ({
           <Ionicons name="flame" size={17} color="#FB7185" />
           <Text style={styles.widgetTitle}>Most Late Chores</Text>
         </View>
-        {onViewAll && (
-          <TouchableOpacity onPress={onViewAll}>
-            <Text style={styles.viewAllText}>View All</Text>
-          </TouchableOpacity>
-        )}
       </View>
 
       <View style={styles.list}>
@@ -110,11 +103,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: colors.textMain,
-  },
-  viewAllText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.primary,
   },
   list: {
     backgroundColor: '#FAFBFD',
