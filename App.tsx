@@ -1,14 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import {
-  SafeAreaView,
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  StatusBar,
-  TouchableOpacity,
-  AppState,
-} from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, AppState } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 import { Chore, HomeWidgetConfig } from './src/types/chore';
 import { colors } from './src/theme/colors';
 import {
@@ -191,140 +184,143 @@ export default function App() {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar style="dark" />
 
-      {/* Header */}
-      <Header
-        onOpenAddChore={() => openEditor(null)}
-        onOpenCustomizeWidgets={() => setCustomizeModalVisible(true)}
-      />
-
-      <View style={styles.content}>
-        <FlatList
-          data={filteredChores}
-          keyExtractor={(item) => item.id}
-          extraData={now}
-          renderItem={({ item }) => (
-            <ChoreCard
-              chore={item}
-              onLogCompleted={handleLogCompleted}
-              onEdit={openEditor}
-              onSelectLabel={(label) => setSelectedLabel(label)}
-            />
-          )}
-          contentContainerStyle={styles.listContainer}
-          showsVerticalScrollIndicator={false}
-          ListHeaderComponent={
-            chores.length > 0 ? (
-              <View style={styles.headerWidgetsArea}>
-                {/* Widget 1: Quick Overview Summary (if enabled and no filter active) */}
-                {!selectedLabel && isWidgetEnabled('quick-overview') && (
-                  <QuickOverviewWidget chores={chores} />
-                )}
-
-                {/* Widget 2: Consistency & Performance Tracker Graph Widget */}
-                {!selectedLabel && isWidgetEnabled('chore-consistency') && (
-                  <ChoreConsistencyWidget
-                    chores={chores}
-                    selectedChoreId={consistencyChoreId}
-                    onSelectChoreId={handleUpdateConsistencyChoreId}
-                    onLogCompleted={handleLogCompleted}
-                  />
-                )}
-
-                {/* Widget 3: Most Late Chores Shortcut Widget (if enabled and no filter active) */}
-                {!selectedLabel && isWidgetEnabled('top-lateness') && (
-                  <TopLatenessWidget
-                    chores={chores}
-                    limit={topLatenessLimit}
-                    onLogCompleted={handleLogCompleted}
-                    onSelectChore={openEditor}
-                  />
-                )}
-
-                {/* Widget 4: Category Shortcuts Widget (if enabled) */}
-                {isWidgetEnabled('category-shortcuts') && (
-                  <CategoryShortcutsWidget
-                    chores={chores}
-                    labels={availableLabels}
-                    activeFilter={selectedLabel}
-                    onSelectCategory={(cat) => setSelectedLabel(cat)}
-                  />
-                )}
-
-                {/* Category Filter Pills Bar */}
-                <CategoryFilterBar
-                  labels={availableLabels}
-                  selectedLabel={selectedLabel}
-                  onSelectLabel={setSelectedLabel}
-                  totalChoresCount={chores.length}
-                />
-
-                {/* List Header Title */}
-                <View style={styles.sectionHeaderRow}>
-                  <Text style={styles.sectionHeaderTitle}>
-                    {selectedLabel
-                      ? `Chores in #${selectedLabel} (${filteredChores.length})`
-                      : `All Chores (${chores.length})`}
-                  </Text>
-                  <Text style={styles.sectionHeaderSortNote}>Sorted by lateness ↓</Text>
-                </View>
-              </View>
-            ) : null
-          }
-          ListEmptyComponent={
-            <View style={styles.emptyContainer}>
-              <Ionicons
-                name="checkmark-done-circle-outline"
-                size={48}
-                color={colors.textMuted}
-                style={{ marginBottom: 10 }}
-              />
-              <Text style={styles.emptyTitle}>
-                {selectedLabel
-                  ? `No chores found with label #${selectedLabel}`
-                  : 'No chores added yet'}
-              </Text>
-              <Text style={styles.emptySubtitle}>
-                {selectedLabel
-                  ? 'Tap another label above or clear the filter to view all.'
-                  : 'Tap the + button in the top right to add your first chore around the house.'}
-              </Text>
-              {selectedLabel && (
-                <TouchableOpacity
-                  style={styles.clearFilterBtn}
-                  onPress={() => setSelectedLabel(null)}
-                >
-                  <Text style={styles.clearFilterBtnText}>Show All Chores</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          }
+        {/* Header */}
+        <Header
+          onOpenAddChore={() => openEditor(null)}
+          onOpenCustomizeWidgets={() => setCustomizeModalVisible(true)}
         />
-      </View>
 
-      {/* Add / Edit Chore Modal */}
-      <EditChoreModal
-        key={editorKey}
-        visible={editModalVisible}
-        chore={editingChore}
-        availableLabels={availableLabels}
-        onClose={() => setEditModalVisible(false)}
-        onSave={handleSaveChore}
-        onDelete={handleDeleteChore}
-        onLogCompletedNow={handleLogCompleted}
-      />
+        <View style={styles.content}>
+          <FlatList
+            data={filteredChores}
+            keyExtractor={(item) => item.id}
+            extraData={now}
+            renderItem={({ item }) => (
+              <ChoreCard
+                chore={item}
+                onLogCompleted={handleLogCompleted}
+                onEdit={openEditor}
+                onSelectLabel={(label) => setSelectedLabel(label)}
+              />
+            )}
+            contentContainerStyle={styles.listContainer}
+            showsVerticalScrollIndicator={false}
+            ListHeaderComponent={
+              chores.length > 0 ? (
+                <View style={styles.headerWidgetsArea}>
+                  {/* Widget 1: Quick Overview Summary (if enabled and no filter active) */}
+                  {!selectedLabel && isWidgetEnabled('quick-overview') && (
+                    <QuickOverviewWidget chores={chores} />
+                  )}
 
-      {/* Customize Home Widgets Modal */}
-      <CustomizeWidgetsModal
-        visible={customizeModalVisible}
-        widgets={widgets}
-        chores={chores}
-        onClose={() => setCustomizeModalVisible(false)}
-        onUpdateWidgets={handleUpdateWidgets}
-      />
-    </SafeAreaView>
+                  {/* Widget 2: Consistency & Performance Tracker Graph Widget */}
+                  {!selectedLabel && isWidgetEnabled('chore-consistency') && (
+                    <ChoreConsistencyWidget
+                      chores={chores}
+                      selectedChoreId={consistencyChoreId}
+                      onSelectChoreId={handleUpdateConsistencyChoreId}
+                      onLogCompleted={handleLogCompleted}
+                    />
+                  )}
+
+                  {/* Widget 3: Most Late Chores Shortcut Widget (if enabled and no filter active) */}
+                  {!selectedLabel && isWidgetEnabled('top-lateness') && (
+                    <TopLatenessWidget
+                      chores={chores}
+                      limit={topLatenessLimit}
+                      onLogCompleted={handleLogCompleted}
+                      onSelectChore={openEditor}
+                    />
+                  )}
+
+                  {/* Widget 4: Category Shortcuts Widget (if enabled) */}
+                  {isWidgetEnabled('category-shortcuts') && (
+                    <CategoryShortcutsWidget
+                      chores={chores}
+                      labels={availableLabels}
+                      activeFilter={selectedLabel}
+                      onSelectCategory={(cat) => setSelectedLabel(cat)}
+                    />
+                  )}
+
+                  {/* Category Filter Pills Bar */}
+                  <CategoryFilterBar
+                    labels={availableLabels}
+                    selectedLabel={selectedLabel}
+                    onSelectLabel={setSelectedLabel}
+                    totalChoresCount={chores.length}
+                  />
+
+                  {/* List Header Title */}
+                  <View style={styles.sectionHeaderRow}>
+                    <Text style={styles.sectionHeaderTitle}>
+                      {selectedLabel
+                        ? `Chores in #${selectedLabel} (${filteredChores.length})`
+                        : `All Chores (${chores.length})`}
+                    </Text>
+                    <Text style={styles.sectionHeaderSortNote}>Sorted by lateness ↓</Text>
+                  </View>
+                </View>
+              ) : null
+            }
+            ListEmptyComponent={
+              <View style={styles.emptyContainer}>
+                <Ionicons
+                  name="checkmark-done-circle-outline"
+                  size={48}
+                  color={colors.textMuted}
+                  style={{ marginBottom: 10 }}
+                />
+                <Text style={styles.emptyTitle}>
+                  {selectedLabel
+                    ? `No chores found with label #${selectedLabel}`
+                    : 'No chores added yet'}
+                </Text>
+                <Text style={styles.emptySubtitle}>
+                  {selectedLabel
+                    ? 'Tap another label above or clear the filter to view all.'
+                    : 'Tap the + button in the top right to add your first chore around the house.'}
+                </Text>
+                {selectedLabel && (
+                  <TouchableOpacity
+                    accessibilityRole="button"
+                    style={styles.clearFilterBtn}
+                    onPress={() => setSelectedLabel(null)}
+                  >
+                    <Text style={styles.clearFilterBtnText}>Show All Chores</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            }
+          />
+        </View>
+
+        {/* Add / Edit Chore Modal */}
+        <EditChoreModal
+          key={editorKey}
+          visible={editModalVisible}
+          chore={editingChore}
+          availableLabels={availableLabels}
+          onClose={() => setEditModalVisible(false)}
+          onSave={handleSaveChore}
+          onDelete={handleDeleteChore}
+          onLogCompletedNow={handleLogCompleted}
+        />
+
+        {/* Customize Home Widgets Modal */}
+        <CustomizeWidgetsModal
+          visible={customizeModalVisible}
+          widgets={widgets}
+          chores={chores}
+          onClose={() => setCustomizeModalVisible(false)}
+          onUpdateWidgets={handleUpdateWidgets}
+        />
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 

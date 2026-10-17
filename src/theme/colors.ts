@@ -1,8 +1,9 @@
 export const colors = {
   // Pastel Periwinkle / Lavender Primary
-  primary: '#818CF8', // Soft pastel periwinkle
+  // Darker than the original pastel #818CF8 so white text on it meets WCAG AA (6.3:1)
+  primary: '#4F46E5', // Indigo
   primaryLight: '#EEF2FF', // Very light soft lavender
-  primaryDark: '#6366F1',
+  primaryDark: '#4338CA',
   primarySoft: '#E0E7FF',
 
   // Pastel Lateness Indicators
@@ -31,8 +32,8 @@ export const colors = {
   card: '#FFFFFF',
   cardBorder: '#EEF2F6', // Gentle soft border
   textMain: '#1E293B', // Soft charcoal
-  textSecondary: '#64748B', // Soft slate
-  textMuted: '#94A3B8', // Pastel slate
+  textSecondary: '#5B6B7F', // Soft slate (≥4.5:1 on light surfaces)
+  textMuted: '#6B7280', // Muted grey (≥4.5:1 on light surfaces)
   border: '#E8EDF5',
 
   // Pastel Tags

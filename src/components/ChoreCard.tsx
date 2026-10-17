@@ -32,6 +32,15 @@ export const ChoreCard: React.FC<ChoreCardProps> = ({
       style={[styles.card, timing.isOverdue && { borderColor: statusTheme.border }]}
       onPress={() => onEdit(chore)}
       activeOpacity={0.85}
+      // The card is one accessible element, so screen readers can't reach the
+      // nested Done button; expose it as a custom action instead.
+      accessibilityRole="button"
+      accessibilityLabel={`${chore.title}, ${timing.latenessText}`}
+      accessibilityHint="Opens the chore editor"
+      accessibilityActions={[{ name: 'markDone', label: 'Mark done' }]}
+      onAccessibilityAction={(e) => {
+        if (e.nativeEvent.actionName === 'markDone') handleLogDone();
+      }}
     >
       {/* Top Header: Frequency & Pastel Status Badge */}
       <View style={styles.topRow}>
@@ -72,6 +81,7 @@ export const ChoreCard: React.FC<ChoreCardProps> = ({
 
         {/* 1-Tap Log Completed Action Button */}
         <TouchableOpacity
+          accessibilityRole="button"
           style={[styles.logButton, timing.isOverdue && styles.logButtonOverdue]}
           onPress={handleLogDone}
           activeOpacity={0.75}
@@ -88,6 +98,7 @@ export const ChoreCard: React.FC<ChoreCardProps> = ({
         <View style={styles.labelsContainer}>
           {chore.labels.map((label) => (
             <TouchableOpacity
+              accessibilityRole="button"
               key={label}
               style={styles.labelChip}
               onPress={() => onSelectLabel?.(label)}
@@ -193,7 +204,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   logButtonOverdue: {
-    backgroundColor: '#FB7185', // Soft pastel rose
+    backgroundColor: '#E11D48', // Rose, dark enough for white text
   },
   logButtonText: {
     color: '#FFFFFF',
@@ -216,7 +227,7 @@ const styles = StyleSheet.create({
   },
   labelText: {
     fontSize: 11,
-    color: '#6366F1',
+    color: colors.primary,
     fontWeight: '600',
   },
 });

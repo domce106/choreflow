@@ -30,6 +30,7 @@ export const CategoryShortcutsWidget: React.FC<CategoryShortcutsWidgetProps> = (
         </View>
         {activeFilter && (
           <TouchableOpacity
+            accessibilityRole="button"
             onPress={() => {
               triggerLightHaptic();
               onSelectCategory(null);
@@ -54,6 +55,8 @@ export const CategoryShortcutsWidget: React.FC<CategoryShortcutsWidgetProps> = (
 
           return (
             <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityState={{ selected: isSelected }}
               key={label}
               style={[
                 styles.shortcutTile,

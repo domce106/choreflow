@@ -7,11 +7,12 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  SafeAreaView,
   Alert,
   Switch,
   Platform,
 } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import * as Crypto from 'expo-crypto';
 import { Chore, FrequencyUnit } from '../types/chore';
 import { calculateFrequencyInDays } from '../utils/time';
 import { colors } from '../theme/colors';
@@ -109,7 +110,7 @@ export const EditChoreModal: React.FC<EditChoreModalProps> = ({
     const frequencyInDays = calculateFrequencyInDays(frequencyValue, frequencyUnit);
 
     const savedChore: Chore = {
-      id: chore ? chore.id : `chore-${Date.now()}`,
+      id: chore ? chore.id : Crypto.randomUUID(),
       title: title.trim(),
       notes: notes.trim() ? notes.trim() : undefined,
       frequencyValue,
@@ -152,198 +153,229 @@ export const EditChoreModal: React.FC<EditChoreModalProps> = ({
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={onClose} style={styles.headerButton}>
-            <Text style={styles.cancelText}>Cancel</Text>
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>{chore ? 'Edit Chore' : 'Add New Chore'}</Text>
-          <TouchableOpacity onPress={handleSave} style={styles.headerButton}>
-            <Text style={styles.saveText}>Save</Text>
-          </TouchableOpacity>
-        </View>
-
-        <ScrollView style={styles.content} keyboardShouldPersistTaps="handled">
-          {/* Chore Title */}
-          <Text style={styles.sectionLabel}>CHORE TITLE *</Text>
-          <TextInput
-            style={styles.input}
-            value={title}
-            onChangeText={setTitle}
-            placeholder="e.g. Vacuum living room, Clean bathroom"
-            placeholderTextColor={colors.textMuted}
-          />
-
-          {/* Notes */}
-          <Text style={styles.sectionLabel}>NOTES / DETAILS (OPTIONAL)</Text>
-          <TextInput
-            style={[styles.input, styles.textArea]}
-            value={notes}
-            onChangeText={setNotes}
-            placeholder="e.g. Use the hardwood floor attachment"
-            placeholderTextColor={colors.textMuted}
-            multiline
-            numberOfLines={2}
-          />
-
-          {/* Frequency Section */}
-          <Text style={styles.sectionLabel}>FREQUENCY (HOW OFTEN IS IT DONE?)</Text>
-          <View style={styles.presetsRow}>
-            {FREQUENCY_PRESETS.map((p) => {
-              const isSelected = frequencyValue === p.value && frequencyUnit === p.unit;
-              return (
-                <TouchableOpacity
-                  key={`${p.value}-${p.unit}`}
-                  style={[styles.presetPill, isSelected && styles.presetPillSelected]}
-                  onPress={() => handleSelectPreset(p.value, p.unit)}
-                >
-                  <Text style={[styles.presetText, isSelected && styles.presetTextSelected]}>
-                    {p.label}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
+      {/* Modals render in a separate native root, so they need their own provider */}
+      <SafeAreaProvider>
+        <SafeAreaView style={styles.safeArea}>
+          <View style={styles.header}>
+            <TouchableOpacity
+              onPress={onClose}
+              style={styles.headerButton}
+              accessibilityRole="button"
+            >
+              <Text style={styles.cancelText}>Cancel</Text>
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>{chore ? 'Edit Chore' : 'Add New Chore'}</Text>
+            <TouchableOpacity
+              onPress={handleSave}
+              style={styles.headerButton}
+              accessibilityRole="button"
+            >
+              <Text style={styles.saveText}>Save</Text>
+            </TouchableOpacity>
           </View>
 
-          {/* Custom Frequency Value & Unit */}
-          <View style={styles.customFrequencyRow}>
-            <Text style={styles.customFreqPrefix}>Every</Text>
+          <ScrollView style={styles.content} keyboardShouldPersistTaps="handled">
+            {/* Chore Title */}
+            <Text style={styles.sectionLabel}>CHORE TITLE *</Text>
             <TextInput
-              style={styles.customNumberInput}
-              value={customValueText}
-              onChangeText={handleCustomValueChange}
-              keyboardType="number-pad"
-              maxLength={3}
+              style={styles.input}
+              accessibilityLabel="Chore title"
+              value={title}
+              onChangeText={setTitle}
+              placeholder="e.g. Vacuum living room, Clean bathroom"
+              placeholderTextColor={colors.textMuted}
             />
-            <View style={styles.unitButtonsRow}>
-              {(['days', 'weeks', 'months'] as FrequencyUnit[]).map((u) => {
-                const isSelected = frequencyUnit === u;
+
+            {/* Notes */}
+            <Text style={styles.sectionLabel}>NOTES / DETAILS (OPTIONAL)</Text>
+            <TextInput
+              style={[styles.input, styles.textArea]}
+              accessibilityLabel="Notes"
+              value={notes}
+              onChangeText={setNotes}
+              placeholder="e.g. Use the hardwood floor attachment"
+              placeholderTextColor={colors.textMuted}
+              multiline
+              numberOfLines={2}
+            />
+
+            {/* Frequency Section */}
+            <Text style={styles.sectionLabel}>FREQUENCY (HOW OFTEN IS IT DONE?)</Text>
+            <View style={styles.presetsRow}>
+              {FREQUENCY_PRESETS.map((p) => {
+                const isSelected = frequencyValue === p.value && frequencyUnit === p.unit;
                 return (
                   <TouchableOpacity
-                    key={u}
-                    style={[styles.unitButton, isSelected && styles.unitButtonSelected]}
-                    onPress={() => {
-                      triggerLightHaptic();
-                      setFrequencyUnit(u);
-                    }}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: isSelected }}
+                    key={`${p.value}-${p.unit}`}
+                    style={[styles.presetPill, isSelected && styles.presetPillSelected]}
+                    onPress={() => handleSelectPreset(p.value, p.unit)}
                   >
-                    <Text
-                      style={[styles.unitButtonText, isSelected && styles.unitButtonTextSelected]}
-                    >
-                      {u}
+                    <Text style={[styles.presetText, isSelected && styles.presetTextSelected]}>
+                      {p.label}
                     </Text>
                   </TouchableOpacity>
                 );
               })}
             </View>
-          </View>
 
-          {/* Labels / Categories Section */}
-          <Text style={styles.sectionLabel}>
-            LABELS & CATEGORIES (CHOOSE MULTIPLE OR CREATE NEW)
-          </Text>
-          <Text style={styles.helperText}>
-            Name and assign your own custom labels to categorize this chore.
-          </Text>
-
-          {/* Selected & Available Labels */}
-          <View style={styles.labelsPoolWrap}>
-            {allLabelsPool.map((label) => {
-              const isSelected = selectedLabels.includes(label);
-              return (
-                <TouchableOpacity
-                  key={label}
-                  style={[styles.labelChip, isSelected && styles.labelChipSelected]}
-                  onPress={() => handleToggleLabel(label)}
-                  activeOpacity={0.7}
-                >
-                  <Text style={[styles.labelChipText, isSelected && styles.labelChipTextSelected]}>
-                    #{label}
-                  </Text>
-                  {isSelected && (
-                    <Ionicons
-                      name="checkmark"
-                      size={14}
-                      color="#FFFFFF"
-                      style={{ marginLeft: 4 }}
-                    />
-                  )}
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-
-          {/* Add New Custom Label Input */}
-          <View style={styles.addLabelRow}>
-            <TextInput
-              style={[styles.input, styles.addLabelInput]}
-              value={newLabelInput}
-              onChangeText={setNewLabelInput}
-              placeholder="Name a new label (e.g. Upstairs, Fast)"
-              placeholderTextColor={colors.textMuted}
-              onSubmitEditing={handleAddNewLabel}
-            />
-            <TouchableOpacity style={styles.addLabelBtn} onPress={handleAddNewLabel}>
-              <Ionicons name="add" size={20} color="#FFFFFF" />
-            </TouchableOpacity>
-          </View>
-
-          {/* Notifications Switch */}
-          <View style={styles.switchRow}>
-            <View style={{ flex: 1, paddingRight: 8 }}>
-              <Text style={styles.switchTitle}>Remind When Due</Text>
-              <Text style={styles.switchSubtitle}>
-                Sends a notification based on this chore’s frequency and lateness.
-              </Text>
+            {/* Custom Frequency Value & Unit */}
+            <View style={styles.customFrequencyRow}>
+              <Text style={styles.customFreqPrefix}>Every</Text>
+              <TextInput
+                style={styles.customNumberInput}
+                accessibilityLabel="Repeat every"
+                value={customValueText}
+                onChangeText={handleCustomValueChange}
+                keyboardType="number-pad"
+                maxLength={3}
+              />
+              <View style={styles.unitButtonsRow}>
+                {(['days', 'weeks', 'months'] as FrequencyUnit[]).map((u) => {
+                  const isSelected = frequencyUnit === u;
+                  return (
+                    <TouchableOpacity
+                      accessibilityRole="button"
+                      accessibilityState={{ selected: isSelected }}
+                      key={u}
+                      style={[styles.unitButton, isSelected && styles.unitButtonSelected]}
+                      onPress={() => {
+                        triggerLightHaptic();
+                        setFrequencyUnit(u);
+                      }}
+                    >
+                      <Text
+                        style={[styles.unitButtonText, isSelected && styles.unitButtonTextSelected]}
+                      >
+                        {u}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
             </View>
-            <Switch
-              value={reminderEnabled}
-              onValueChange={setReminderEnabled}
-              trackColor={{ false: colors.border, true: colors.primary }}
-            />
-          </View>
 
-          {/* If Editing: Quick Log as Done Button */}
-          {chore && onLogCompletedNow && (
-            <TouchableOpacity
-              style={styles.logDoneNowBtn}
-              onPress={() => {
-                triggerMediumHaptic();
-                onLogCompletedNow(chore.id);
-                onClose();
-              }}
-              activeOpacity={0.8}
-            >
-              <Ionicons
-                name="checkmark-circle-outline"
-                size={18}
-                color="#16A34A"
-                style={{ marginRight: 6 }}
+            {/* Labels / Categories Section */}
+            <Text style={styles.sectionLabel}>
+              LABELS & CATEGORIES (CHOOSE MULTIPLE OR CREATE NEW)
+            </Text>
+            <Text style={styles.helperText}>
+              Name and assign your own custom labels to categorize this chore.
+            </Text>
+
+            {/* Selected & Available Labels */}
+            <View style={styles.labelsPoolWrap}>
+              {allLabelsPool.map((label) => {
+                const isSelected = selectedLabels.includes(label);
+                return (
+                  <TouchableOpacity
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: isSelected }}
+                    key={label}
+                    style={[styles.labelChip, isSelected && styles.labelChipSelected]}
+                    onPress={() => handleToggleLabel(label)}
+                    activeOpacity={0.7}
+                  >
+                    <Text
+                      style={[styles.labelChipText, isSelected && styles.labelChipTextSelected]}
+                    >
+                      #{label}
+                    </Text>
+                    {isSelected && (
+                      <Ionicons
+                        name="checkmark"
+                        size={14}
+                        color="#FFFFFF"
+                        style={{ marginLeft: 4 }}
+                      />
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            {/* Add New Custom Label Input */}
+            <View style={styles.addLabelRow}>
+              <TextInput
+                style={[styles.input, styles.addLabelInput]}
+                accessibilityLabel="New label name"
+                value={newLabelInput}
+                onChangeText={setNewLabelInput}
+                placeholder="Name a new label (e.g. Upstairs, Fast)"
+                placeholderTextColor={colors.textMuted}
+                onSubmitEditing={handleAddNewLabel}
               />
-              <Text style={styles.logDoneNowText}>Log Chore As Done Right Now</Text>
-            </TouchableOpacity>
-          )}
+              <TouchableOpacity
+                style={styles.addLabelBtn}
+                onPress={handleAddNewLabel}
+                accessibilityRole="button"
+                accessibilityLabel="Add label"
+              >
+                <Ionicons name="add" size={20} color="#FFFFFF" />
+              </TouchableOpacity>
+            </View>
 
-          {/* Delete Option */}
-          {chore && onDelete && (
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={handleDelete}
-              activeOpacity={0.8}
-            >
-              <Ionicons
-                name="trash-outline"
-                size={18}
-                color={colors.danger}
-                style={{ marginRight: 6 }}
+            {/* Notifications Switch */}
+            <View style={styles.switchRow}>
+              <View style={{ flex: 1, paddingRight: 8 }}>
+                <Text style={styles.switchTitle}>Remind When Due</Text>
+                <Text style={styles.switchSubtitle}>
+                  Sends a notification based on this chore’s frequency and lateness.
+                </Text>
+              </View>
+              <Switch
+                value={reminderEnabled}
+                onValueChange={setReminderEnabled}
+                accessibilityLabel="Remind when due"
+                trackColor={{ false: colors.border, true: colors.primary }}
               />
-              <Text style={styles.deleteButtonText}>Delete Chore</Text>
-            </TouchableOpacity>
-          )}
+            </View>
 
-          <View style={{ height: 40 }} />
-        </ScrollView>
-      </SafeAreaView>
+            {/* If Editing: Quick Log as Done Button */}
+            {chore && onLogCompletedNow && (
+              <TouchableOpacity
+                accessibilityRole="button"
+                style={styles.logDoneNowBtn}
+                onPress={() => {
+                  triggerMediumHaptic();
+                  onLogCompletedNow(chore.id);
+                  onClose();
+                }}
+                activeOpacity={0.8}
+              >
+                <Ionicons
+                  name="checkmark-circle-outline"
+                  size={18}
+                  color="#16A34A"
+                  style={{ marginRight: 6 }}
+                />
+                <Text style={styles.logDoneNowText}>Log Chore As Done Right Now</Text>
+              </TouchableOpacity>
+            )}
+
+            {/* Delete Option */}
+            {chore && onDelete && (
+              <TouchableOpacity
+                accessibilityRole="button"
+                style={styles.deleteButton}
+                onPress={handleDelete}
+                activeOpacity={0.8}
+              >
+                <Ionicons
+                  name="trash-outline"
+                  size={18}
+                  color={colors.danger}
+                  style={{ marginRight: 6 }}
+                />
+                <Text style={styles.deleteButtonText}>Delete Chore</Text>
+              </TouchableOpacity>
+            )}
+
+            <View style={{ height: 40 }} />
+          </ScrollView>
+        </SafeAreaView>
+      </SafeAreaProvider>
     </Modal>
   );
 };
