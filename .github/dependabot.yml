@@ -28,3 +28,11 @@ updates:
       - dependency-name: 'react-native-*'
       - dependency-name: '@react-native-async-storage/async-storage'
       - dependency-name: 'typescript'
+      # Majors must wait for eslint-config-expo / jest-expo to support them
+      # (ESLint 10 breaks eslint-plugin-react; jest-expo 57 targets Jest 29).
+      - dependency-name: 'eslint'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'jest'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@types/jest'
+        update-types: ['version-update:semver-major']
