@@ -65,6 +65,8 @@ export const ChoreConsistencyWidget: React.FC<ChoreConsistencyWidgetProps> = ({
           const isSelected = chore.id === activeChore.id;
           return (
             <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityState={{ selected: isSelected }}
               key={chore.id}
               style={[styles.choreChip, isSelected && styles.choreChipSelected]}
               onPress={() => handleChoreChipPress(chore.id)}
@@ -149,7 +151,12 @@ export const ChoreConsistencyWidget: React.FC<ChoreConsistencyWidgetProps> = ({
       </View>
 
       {/* Pastel Quick-Log Button */}
-      <TouchableOpacity style={styles.logButton} onPress={handleLogNow} activeOpacity={0.8}>
+      <TouchableOpacity
+        style={styles.logButton}
+        onPress={handleLogNow}
+        activeOpacity={0.8}
+        accessibilityRole="button"
+      >
         <Ionicons name="sparkles" size={15} color="#FFFFFF" style={{ marginRight: 6 }} />
         <Text style={styles.logButtonText}>Log “{activeChore.title}” Done Now</Text>
       </TouchableOpacity>
@@ -246,7 +253,7 @@ const styles = StyleSheet.create({
   scoreNumber: {
     fontSize: 26,
     fontWeight: '800',
-    color: '#059669',
+    color: '#047857',
   },
   scoreLabel: {
     fontSize: 10,
@@ -300,7 +307,7 @@ const styles = StyleSheet.create({
   targetLineLabel: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#059669',
+    color: '#047857',
   },
   emptyGraph: {
     paddingVertical: 20,

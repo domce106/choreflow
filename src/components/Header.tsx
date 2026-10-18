@@ -22,6 +22,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenAddChore, onOpenCustomizeW
 
       <View style={styles.actions}>
         <TouchableOpacity
+          accessibilityRole="button"
           style={styles.iconButton}
           onPress={() => {
             triggerLightHaptic();
@@ -33,6 +34,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenAddChore, onOpenCustomizeW
         </TouchableOpacity>
 
         <TouchableOpacity
+          accessibilityRole="button"
           style={styles.addButton}
           onPress={() => {
             triggerLightHaptic();

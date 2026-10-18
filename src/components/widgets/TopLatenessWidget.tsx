@@ -41,6 +41,16 @@ export const TopLatenessWidget: React.FC<TopLatenessWidgetProps> = ({
               key={chore.id}
               style={[styles.itemRow, index < topItems.length - 1 && styles.borderBottom]}
               onPress={() => onSelectChore(chore)}
+              accessibilityRole="button"
+              accessibilityLabel={`${chore.title}, ${timing.latenessText}`}
+              accessibilityHint="Opens the chore editor"
+              accessibilityActions={[{ name: 'markDone', label: 'Mark done' }]}
+              onAccessibilityAction={(e) => {
+                if (e.nativeEvent.actionName === 'markDone') {
+                  triggerSuccessHaptic();
+                  onLogCompleted(chore.id);
+                }
+              }}
               activeOpacity={0.7}
             >
               <View style={styles.itemInfo}>
@@ -56,6 +66,7 @@ export const TopLatenessWidget: React.FC<TopLatenessWidgetProps> = ({
               </View>
 
               <TouchableOpacity
+                accessibilityRole="button"
                 style={styles.doneCheck}
                 onPress={() => {
                   triggerSuccessHaptic();
@@ -136,11 +147,11 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   overdueText: {
-    color: '#E11D48',
+    color: '#BE123C',
     fontWeight: '700',
   },
   onTrackText: {
-    color: '#059669',
+    color: '#047857',
     fontWeight: '700',
   },
   doneCheck: {

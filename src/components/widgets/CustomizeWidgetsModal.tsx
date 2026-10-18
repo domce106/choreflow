@@ -1,14 +1,6 @@
 import React from 'react';
-import {
-  Modal,
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  SafeAreaView,
-  Switch,
-  ScrollView,
-} from 'react-native';
+import { Modal, View, Text, StyleSheet, TouchableOpacity, Switch, ScrollView } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Chore, HomeWidgetConfig, WidgetType } from '../../types/chore';
 import { colors } from '../../theme/colors';
 import { triggerLightHaptic } from '../../utils/haptics';
@@ -63,95 +55,107 @@ export const CustomizeWidgetsModal: React.FC<CustomizeWidgetsModalProps> = ({
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Customize Home Widgets</Text>
-          <TouchableOpacity onPress={onClose} style={styles.doneButton}>
-            <Text style={styles.doneText}>Done</Text>
-          </TouchableOpacity>
-        </View>
+      {/* Modals render in a separate native root, so they need their own provider */}
+      <SafeAreaProvider>
+        <SafeAreaView style={styles.safeArea}>
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>Customize Home Widgets</Text>
+            <TouchableOpacity
+              onPress={onClose}
+              style={styles.doneButton}
+              accessibilityRole="button"
+            >
+              <Text style={styles.doneText}>Done</Text>
+            </TouchableOpacity>
+          </View>
 
-        <ScrollView style={styles.content}>
-          <Text style={styles.hintText}>
-            Choose which widgets appear on your home screen and how they look.
-          </Text>
+          <ScrollView style={styles.content}>
+            <Text style={styles.hintText}>
+              Choose which widgets appear on your home screen and how they look.
+            </Text>
 
-          {widgets.map((widget) => (
-            <View key={widget.id} style={styles.widgetRow}>
-              <View style={styles.widgetInfo}>
-                <Text style={styles.widgetTitle}>{widget.title}</Text>
-                <Text style={styles.widgetSubtitle}>{WIDGET_DESCRIPTIONS[widget.type]}</Text>
+            {widgets.map((widget) => (
+              <View key={widget.id} style={styles.widgetRow}>
+                <View style={styles.widgetInfo}>
+                  <Text style={styles.widgetTitle}>{widget.title}</Text>
+                  <Text style={styles.widgetSubtitle}>{WIDGET_DESCRIPTIONS[widget.type]}</Text>
 
-                {/* Additional controls for Consistency Tracker */}
-                {widget.type === 'chore-consistency' && widget.enabled && chores.length > 0 && (
-                  <View style={styles.pickerSection}>
-                    <Text style={styles.pickerLabel}>Track Chore:</Text>
-                    <ScrollView
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      style={{ marginTop: 6 }}
-                    >
-                      <View style={{ flexDirection: 'row', gap: 6 }}>
-                        {chores.map((c) => {
-                          const isSelected = (widget.selectedChoreId || chores[0]?.id) === c.id;
-                          return (
-                            <TouchableOpacity
-                              key={c.id}
-                              style={[styles.chorePill, isSelected && styles.chorePillActive]}
-                              onPress={() => changeSelectedChore(widget.id, c.id)}
-                            >
-                              <Text
-                                style={[
-                                  styles.chorePillText,
-                                  isSelected && styles.chorePillTextActive,
-                                ]}
-                              >
-                                {c.title}
-                              </Text>
-                            </TouchableOpacity>
-                          );
-                        })}
-                      </View>
-                    </ScrollView>
-                  </View>
-                )}
-
-                {/* Additional controls for top lateness widget */}
-                {widget.type === 'top-lateness' && widget.enabled && (
-                  <View style={styles.limitPicker}>
-                    <Text style={styles.limitLabel}>Show top:</Text>
-                    {[3, 5, 10].map((num) => (
-                      <TouchableOpacity
-                        key={num}
-                        style={[
-                          styles.limitChip,
-                          (widget.itemLimit || 3) === num && styles.limitChipActive,
-                        ]}
-                        onPress={() => changeLimit(widget.id, num)}
+                  {/* Additional controls for Consistency Tracker */}
+                  {widget.type === 'chore-consistency' && widget.enabled && chores.length > 0 && (
+                    <View style={styles.pickerSection}>
+                      <Text style={styles.pickerLabel}>Track Chore:</Text>
+                      <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        style={{ marginTop: 6 }}
                       >
-                        <Text
-                          style={[
-                            styles.limitChipText,
-                            (widget.itemLimit || 3) === num && styles.limitChipTextActive,
-                          ]}
-                        >
-                          {num} items
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                )}
-              </View>
+                        <View style={{ flexDirection: 'row', gap: 6 }}>
+                          {chores.map((c) => {
+                            const isSelected = (widget.selectedChoreId || chores[0]?.id) === c.id;
+                            return (
+                              <TouchableOpacity
+                                accessibilityRole="button"
+                                accessibilityState={{ selected: isSelected }}
+                                key={c.id}
+                                style={[styles.chorePill, isSelected && styles.chorePillActive]}
+                                onPress={() => changeSelectedChore(widget.id, c.id)}
+                              >
+                                <Text
+                                  style={[
+                                    styles.chorePillText,
+                                    isSelected && styles.chorePillTextActive,
+                                  ]}
+                                >
+                                  {c.title}
+                                </Text>
+                              </TouchableOpacity>
+                            );
+                          })}
+                        </View>
+                      </ScrollView>
+                    </View>
+                  )}
 
-              <Switch
-                value={widget.enabled}
-                onValueChange={(val) => toggleWidget(widget.id, val)}
-                trackColor={{ false: colors.border, true: colors.primary }}
-              />
-            </View>
-          ))}
-        </ScrollView>
-      </SafeAreaView>
+                  {/* Additional controls for top lateness widget */}
+                  {widget.type === 'top-lateness' && widget.enabled && (
+                    <View style={styles.limitPicker}>
+                      <Text style={styles.limitLabel}>Show top:</Text>
+                      {[3, 5, 10].map((num) => (
+                        <TouchableOpacity
+                          accessibilityRole="button"
+                          accessibilityState={{ selected: (widget.itemLimit || 3) === num }}
+                          key={num}
+                          style={[
+                            styles.limitChip,
+                            (widget.itemLimit || 3) === num && styles.limitChipActive,
+                          ]}
+                          onPress={() => changeLimit(widget.id, num)}
+                        >
+                          <Text
+                            style={[
+                              styles.limitChipText,
+                              (widget.itemLimit || 3) === num && styles.limitChipTextActive,
+                            ]}
+                          >
+                            {num} items
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  )}
+                </View>
+
+                <Switch
+                  value={widget.enabled}
+                  onValueChange={(val) => toggleWidget(widget.id, val)}
+                  accessibilityLabel={`Show ${widget.title}`}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                />
+              </View>
+            ))}
+          </ScrollView>
+        </SafeAreaView>
+      </SafeAreaProvider>
     </Modal>
   );
 };

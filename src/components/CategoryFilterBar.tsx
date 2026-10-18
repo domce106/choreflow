@@ -24,6 +24,8 @@ export const CategoryFilterBar: React.FC<CategoryFilterBarProps> = ({
         contentContainerStyle={styles.scrollContent}
       >
         <TouchableOpacity
+          accessibilityRole="button"
+          accessibilityState={{ selected: selectedLabel === null }}
           style={[styles.filterChip, selectedLabel === null && styles.filterChipActive]}
           onPress={() => {
             triggerLightHaptic();
@@ -40,6 +42,8 @@ export const CategoryFilterBar: React.FC<CategoryFilterBarProps> = ({
           const pastel = colors.pastels[index % colors.pastels.length];
           return (
             <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityState={{ selected: isSelected }}
               key={label}
               style={[
                 styles.filterChip,

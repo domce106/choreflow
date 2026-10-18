@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   statNumberOverdue: {
     fontSize: 22,
     fontWeight: '800',
-    color: '#E11D48',
+    color: '#BE123C',
   },
   statLabelOverdue: {
     fontSize: 11,
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   statNumberOnTrack: {
     fontSize: 22,
     fontWeight: '800',
-    color: '#059669',
+    color: '#047857',
   },
   statLabelOnTrack: {
     fontSize: 11,
